@@ -2654,9 +2654,9 @@ void CFilesWindow::RefreshDirectory(BOOL probablyUselessRefresh, BOOL forceReloa
     }
 
     // we have a new version of the listing for the same path; now we'll enrich it with parts from the old listing
-    // !!! ATTENTION: refresh in an archive that hasn't changed — oldFiles and oldDirs point to 
+    // !!! ATTENTION: refresh in an archive that hasn't changed — oldFiles and oldDirs point to
     // ArchiveDir+PluginData (see above in ChangePathToArchive), oldArchiveDir+oldPluginData
-    // are empty. 
+    // are empty.
 
     // the main window is inactive, only icons/thumbnails/overlays from the visible part of the panel are loaded, we save CPU time
     if (isInactiveRefresh)
@@ -2905,7 +2905,7 @@ void CFilesWindow::RefreshDirectory(BOOL probablyUselessRefresh, BOOL forceReloa
                 break; // end of searching for selected items
         }
     }
-    if (focusFirstNewItem && i == Dirs->Count - 1) // found a new item
+    if (focusFirstNewItem && i == Files->Count - 1) // found a new item
     {
         if (!Is(ptDisk) || (Files->At(i).Attr & FILE_ATTRIBUTE_TEMPORARY) == 0) //  on disk, we ignore tmp files (they disappear immediately), see https://forum.altap.cz/viewtopic.php?t=2496
         {
