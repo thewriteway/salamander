@@ -1,15 +1,16 @@
 ﻿// SPDX-FileCopyrightText: 2023 Open Salamander Authors
 // SPDX-License-Identifier: GPL-2.0-or-later
+// CommentsTranslationProject: TRANSLATED
 
 #pragma once
 
-// Use the _DEBUG or __ARRAY_DEBUG defines to enable various error state checking. Errors
-// are displayed using TRACE_E and TRACE_C macros.
-// Use the SAFE_ALLOC define to remove source code with testing if memory allocation
-// has not failed (see allochan.*).
+// Use the _DEBUG or __ARRAY_DEBUG defines to enable various error-state checks. Errors
+// are displayed using the TRACE_E and TRACE_C macros.
+// Use the SAFE_ALLOC define to remove code that tests whether memory allocation
+// failed (see allochan.*).
 
-// We need to make this module independent on TRACE macros, so if they are not defined,
-// we define their fakes. Certainly error reporting will not work in such situation.
+// We need to make this module independent of the TRACE macros, so if they are not defined,
+// we define dummy replacements. Error reporting will not work in that case.
 #if !defined(TRACE_I) && !defined(TRACE_E) && !defined(TRACE_C)
 inline void __TraceEmptyFunction() {}
 #define TRACE_I(str) __TraceEmptyFunction()
@@ -32,8 +33,8 @@ enum CDeleteType
 enum CErrorType
 {
     etNone,         // OK
-    etLowMemory,    // new - NULL
-    etUnknownIndex, // index is out of array range
+    etLowMemory,    // new returned NULL
+    etUnknownIndex, // index is out of range for the array
     etBadInsert,    // index of inserted item is out of array range
     etBadDispose,   // index of disposed item is out of array range
     etDestructed,   // array was already destructed using Destroy() method
@@ -79,12 +80,12 @@ public:
     }
 
     void Insert(int index, const DATA_TYPE& member);
-    int Add(const DATA_TYPE& member); // adds item to the end of array, returns item index
+    int Add(const DATA_TYPE& member); // adds an item to the end of the array, returns its index
 
-    void Insert(int index, const DATA_TYPE* members, int count); // insert 'count' of 'members' items
-    int Add(const DATA_TYPE* members, int count);                // add 'count' of 'members' items
+    void Insert(int index, const DATA_TYPE* members, int count); // insert 'count' items from 'members'
+    int Add(const DATA_TYPE* members, int count);                // adds 'count' items from 'members'
 
-    DATA_TYPE& At(int index) // returns pointer to item at 'index' possition
+    DATA_TYPE& At(int index) // returns a reference to the item at 'index'
     {
 #if defined(_DEBUG) || defined(__ARRAY_DEBUG)
         if (index >= 0 && index < Count)
@@ -96,12 +97,12 @@ public:
             TRACE_C("Index is out of range (index = " << index
                                                       << ", Count = " << Count << ").");
             Error(etUnknownIndex);
-            return Data[0]; // because of compiler we must return (invalid) item
+            return Data[0]; // compiler workaround: return a possibly invalid item
         }
 #endif
     }
 
-    DATA_TYPE& operator[](int index) // returns pointer to item at 'index' possition
+    DATA_TYPE& operator[](int index) // returns a reference to the item at 'index'
     {
 #if defined(_DEBUG) || defined(__ARRAY_DEBUG)
         if (index >= 0 && index < Count)
@@ -113,7 +114,7 @@ public:
             TRACE_C("Index is out of range (index = " << index
                                                       << ", Count = " << Count << ").");
             Error(etUnknownIndex);
-            return Data[0]; // because of compiler we must return (invalid) item
+            return Data[0]; // compiler workaround: return a possibly invalid item
         }
 #endif
     }
@@ -130,12 +131,12 @@ public:
     void DestroyMembers();             // release items from memory (calling destructors), keep array
     void DetachMembers();              // detach all items (destructors are NOT called), keep array
     void Destroy();                    // complete array destruction (calling destructors)
-    void Delete(int index);            // delete item at 'index' possition (calling destructor), move remaining items
-    void Delete(int index, int count); // delete 'count' of items at 'index' possition (calling destructors), move remaining items
-    void Detach(int index);            // detach item at 'index' possition (destructor is NOT called), move remaining items
-    void Detach(int index, int count); // detach 'count' of items at 'index' possition (destructors are NOT called), move remaining items
+    void Delete(int index);            // deletes the item at 'index' (calling the destructor), moves remaining items
+    void Delete(int index, int count); // delete 'count' items at 'index' position (calling destructors), move remaining items
+    void Detach(int index);            // detach item at 'index' position (destructor is NOT called), move remaining items
+    void Detach(int index, int count); // detach 'count' items at 'index' position (destructors are NOT called), move remaining items
 
-    int SetDelta(int delta); // change 'Delta', return real used value; NOTE: can be used only for empty array
+    int SetDelta(int delta); // change 'Delta', return the actual value used; NOTE: can be used only for an empty array
 
 protected:
     DATA_TYPE* Data; // pointer to array
@@ -143,7 +144,7 @@ protected:
     int Base;        // smallest allocated size of array
     int Delta;       // allocated array size is enlarged/reduced by this value
 
-    virtual void Error(CErrorType err) // array error handling
+    virtual void Error(CErrorType err) // handles array errors
     {
         if (State == etNone)
             State = err;
@@ -153,7 +154,7 @@ protected:
     void EnlargeArray(); // enlarges array
     void ReduceArray();  // reduces array
 
-    void Move(CArrayDirection direction, int first, int count); // move selected items to next/previous index
+    void Move(CArrayDirection direction, int first, int count); // moves selected items to the next or previous index
 
     void CallCopyConstructor(DATA_TYPE* placement, const DATA_TYPE& member)
     {
@@ -182,14 +183,14 @@ protected:
 
     virtual void CallDestructor(DATA_TYPE& member) { member.~DATA_TYPE(); }
 
-private: // following methods will not be called (prevention)
+private: // prevent calls to the following methods
     TDirectArray<DATA_TYPE>() {}
     TDirectArray<DATA_TYPE>(const TDirectArray<DATA_TYPE>&) {}
     TDirectArray<DATA_TYPE>& operator=(TDirectArray<DATA_TYPE>&) { return *this; }
 
-    // compiler reports error on this line: we have just wanted to catch source code designed for
-    // older version of TDirectArray template: use CallDestructor instead of Destructor and please
-    // notice that in new version of TDirectArray copy-constructors and destructors are called
+    // the compiler reports an error on this line: we only want to catch source code written for
+    // an older version of the TDirectArray template; use CallDestructor instead of Destructor, and
+    // note that in the new version of TDirectArray copy constructors and destructors are called
     virtual int Destructor(int) { return 0; }
 };
 
@@ -267,10 +268,10 @@ protected:
 
 // ****************************************************************************
 // TIndirectClassArray:
-//  -vhodne pro ulozeni ukazatelu na objekty, neumoznuje zmenu indexu prvku
-//  -nad polem se neprovadi zadne operace sesunu prvku - prvek zustava
-//   stale na stejnem indexu
-//  -pri pridavani prvku se vyplnuji mezery vznikle predchozim uvolnovanim prvku
+//  -suitable for storing pointers to objects; element indexes do not change
+//  -no element-shifting operations are performed on the array, so an element
+//   always stays at the same index
+//  -when adding elements, gaps created by earlier removals are filled
 
 template <class CLASS_TYPE>
 class TIndirectClassArray : public TIndirectArray<CLASS_TYPE>
@@ -302,7 +303,7 @@ public:
         FirstFreeIndex = 0;
     }
 
-protected: // prevence proti volani nefunkcniho kodu (posouva prvky,...)
+protected: // prevent calls to code that does not work (moves items, ...)
     void Move(CArrayDirection, int, int) {}
     void Insert(int, void*) {}
     void Insert(int, void**, int) {}
@@ -315,24 +316,24 @@ protected: // prevence proti volani nefunkcniho kodu (posouva prvky,...)
 
 // ****************************************************************************
 // TSmallerDirectArray:
-//  -popis viz TDirectArray, ale neni vhodne pro ulozeni objektu (nevola
-//   konstruktory ani destruktory), specializace: setri pamet potrebnou
-//   na spravu pole tim, ze umoznuje celkovy pocet prvku pole jen 65535 - misto
-//   int WORD a nema virtualni metodu CallDestructor
-//  -vhodne jako promenna (atribut) tridy, od ktere existuje mhoho objektu
-//  -pametove naroky: 6 B (jen +2 B oproti klas. poli), (TDirectArray ma 25 B)
-//  -zmenseni za cenu generovani tridy podle sablony pro ruzne 'Base', 'Delta'
-//   a zmenseni rozsahu pole
+//  -see TDirectArray for a description, but it is not suitable for storing objects (it does not call
+//   constructors or destructors); the specialization saves memory needed to
+//   manage the array by allowing only 65535 elements, using WORD instead of
+//   int, and by not having a virtual CallDestructor method
+//  -suitable as a member variable of a class with many instances
+//  -memory requirements: 6 B (only 2 B more than the classic array); TDirectArray has 25 B
+//  -smaller at the cost of generating the class from the template for different 'Base', 'Delta'
+//   values and reducing the array range
 
-template <class DATA_TYPE, WORD Base, WORD Delta> // jen 65535 prvku
+template <class DATA_TYPE, WORD Base, WORD Delta> // only 65535 items
 class TSmallerDirectArray
 {
 public:
 #if defined(_DEBUG) || defined(__ARRAY_DEBUG)
-    CErrorType State; // neni-li etNone stala se chyba
+    CErrorType State; // if not etNone, an error has occurred
 #endif
     DATA_TYPE* Data; // ukazatel na pole, public nutne misto etDestructed
-    WORD Count;      // soucasny pocet polozek v kolekci
+    WORD Count;      // current item count in the collection
 
     TSmallerDirectArray<DATA_TYPE, Base, Delta>();
     ~TSmallerDirectArray() { Destroy(); }
@@ -355,12 +356,12 @@ public:
     }
 
     void Insert(int index, const DATA_TYPE& member);
-    inline WORD Add(const DATA_TYPE& member);      // prida prvek na konec Arraye,
-                                                   // vraci index prvku
-    WORD Add(const DATA_TYPE* members, int count); // pridani count prvku members
+    inline WORD Add(const DATA_TYPE& member);      // adds an item to the end of the array,
+                                                   // returns the item index
+    WORD Add(const DATA_TYPE* members, int count); // adds 'count' items from 'members'
 
-    DATA_TYPE& At(int index) // vraci ukazatel na prvek na pozici
-    {                        // int pouzity jen kvuli warningum - rozsah do 65535
+    DATA_TYPE& At(int index) // returns a reference to the item at 'index'
+    {                        // int is used only to avoid warnings; range up to 65535
 #if defined(_DEBUG) || defined(__ARRAY_DEBUG)
         if (index >= 0 && index < Count)
 #endif
@@ -371,13 +372,13 @@ public:
             TRACE_C("Index is out of range (index = " << index
                                                       << ", Count = " << Count << ").");
             Error(etUnknownIndex);
-            return Data[0]; // kvuli kompileru vracim mozna neplatny prvek
+            return Data[0]; // compiler workaround: return a possibly invalid item
         }
 #endif
     }
 
-    DATA_TYPE& operator[](int index) // vraci ukazatel na prvek na pozici
-    {                                // int pouzity jen kvuli warningum - rozsah do 65535
+    DATA_TYPE& operator[](int index) // returns a reference to the item at the given position
+    {                                // int is used only to avoid warnings; range up to 65535
 #if defined(_DEBUG) || defined(__ARRAY_DEBUG)
         if (index >= 0 && index < Count)
 #endif
@@ -388,7 +389,7 @@ public:
             TRACE_C("Index is out of range (index = " << index
                                                       << ", Count = " << Count << ").");
             Error(etUnknownIndex);
-            return Data[0]; // kvuli kompileru vracim mozna neplatny prvek
+            return Data[0]; // return a possibly invalid element to satisfy the compiler
         }
 #endif
     }
@@ -404,15 +405,15 @@ public:
 
     DATA_TYPE* GetData() { return Data; }
 
-    void DestroyMembers();           // uvolni z pameti jen prvky, pole necha
-    void Destroy();                  // kompletni destrukce objektu
-    void Delete(int index);          // zrusi prvek na pozici a ostatni posune
-    void Reduce(WORD newCount);      // zrusi prvky od indexu newCount az do konce
-    void Delete(WORD from, WORD to); // zrusi prvky <from..to) a sesune ostatni
+    void DestroyMembers();           // releases only the items, keeps the array
+    void Destroy();                  // complete destruction of the object
+    void Delete(int index);          // deletes the item at 'index' and shifts the rest
+    void Reduce(WORD newCount);      // deletes items from newCount to the end
+    void Delete(WORD from, WORD to); // deletes items in <from..to) and shifts the rest down
 
 protected:
 #if defined(_DEBUG) || defined(__ARRAY_DEBUG)
-    virtual void Error(CErrorType err) // zpracovani chyby v kolekci
+    virtual void Error(CErrorType err) // array error handling
     {
         if (State == etNone)
             State = err;
@@ -420,12 +421,12 @@ protected:
             TRACE_E("Incorrect call to Error method (State = " << State << ").");
     }
 #endif
-    void EnlargeArray(); // zvetsi nove pole
-    void ReduceArray();  // zmensi pole
+    void EnlargeArray(); // enlarges array
+    void ReduceArray();  // reduces array
 
     void Move(CArrayDirection direction, WORD first, WORD count);
-    // posune o 1
-private: // nasledujici metody se nebudou volat (prevence)
+    // shift by 1
+private: // prevent calls to the following methods
     TSmallerDirectArray<DATA_TYPE, Base, Delta>(const TSmallerDirectArray<DATA_TYPE, Base, Delta>&) {}
     TSmallerDirectArray<DATA_TYPE, Base, Delta>& operator=(TSmallerDirectArray<DATA_TYPE, Base, Delta>&)
     {
@@ -435,19 +436,19 @@ private: // nasledujici metody se nebudou volat (prevence)
 
 // ****************************************************************************
 // TClassArray:
-//  -vhodne pro ulozeni mnoha malych objektu, neumoznuje zmenu indexu prvku
-//  -alokuje objekty CLASS_TYPE primo do pole,
-//   provadi se volani konstruktoru i destruktoru techto objektu
-//  -nad polem se neprovadi zadne operace sesunu prvku - prvek zustava
-//   stale na stejnem indexu
-//  -platny prvek pole: (index_prvku < Count && !At(index_prvku).IsEmpty())
+//  -suitable for storing many small objects; element indexes do not change
+//  -allocates CLASS_TYPE objects directly in the array,
+//   calling the constructors and destructors of those objects
+//  -no element-shifting operations are performed on the array, so an element
+//   always stays at the same index
+//  -valid array element: (index_prvku < Count && !At(index_prvku).IsEmpty())
 //
-// naroky na CLASS_TYPE:
-//  1) existence metody IsEmpty(), ktera vraci jestli uz se volal
-//     destruktor objektu
-//  2) nadefinovani operatoru 'new' pomoci makra DEFINE_NEW(CLASS_TYPE)
+// requirements for CLASS_TYPE:
+//  1) an IsEmpty() method that returns whether the object's
+//     destructor has already been called
+//  2) operator 'new' defined using the DEFINE_NEW(CLASS_TYPE) macro
 //
-// priklad:
+// example:
 //  class CSimpleObject
 //  {
 //    public:
@@ -463,10 +464,10 @@ private: // nasledujici metody se nebudou volat (prevence)
 //
 //  TClassArray<CSimpleObject> Simples(10, 5);
 //
-// pridani prvku do pole:
+// adding an element to the array:
 //  int index_prvku = Simples.FirstFreeIndex;  // prvni volny index v poli
-//  new (&Simples)CSimpleObject();   // vraci adresu objektu, pri chybe NULL,
-//                                   // prvek byl pridan a ma index index_prvku
+//  new (&Simples)CSimpleObject();   // returns the address of the object, NULL on error,
+//                                   // the element was added and has index index_prvku
 
 template <class CLASS_TYPE>
 class TClassArray : public TDirectArray<CLASS_TYPE>
@@ -498,14 +499,14 @@ public:
 
     ~TClassArray() { Destroy(); }
 
-private: // prevence proti volani nefunkcniho kodu (posouva prvky ...)
+private: // prevent calls to code that does not work (moves items, ...)
     void Insert(int, const CLASS_TYPE&) {}
     void Insert(int, const CLASS_TYPE*, int) {}
     int Add(const CLASS_TYPE&) { return ULONG_MAX; }
     int Add(const CLASS_TYPE*, int) { return ULONG_MAX; }
     void Delete(int) {}
     void Move(CArrayDirection, int, int) {}
-    void DetachMembers() {} // to by nezavolalo destruktory
+    void DetachMembers() {} // that would not call destructors
 };
 
 #define DEFINE_NEW(CLASS_TYPE) \
@@ -695,7 +696,7 @@ TDirectArray<DATA_TYPE>::TDirectArray(int base, int delta)
 template <class DATA_TYPE>
 void TDirectArray<DATA_TYPE>::Destroy()
 {
-    if (State == etNone) // it can be also etDestructed
+    if (State == etNone) // State can also be etDestructed
     {
         if (Data != NULL)
         {
@@ -784,7 +785,7 @@ void TDirectArray<DATA_TYPE>::Insert(int index, const DATA_TYPE* members, int co
 #if defined(_DEBUG) || defined(__ARRAY_DEBUG)
     if (State == etNone)
     {
-        if (Count + count > Available && members + count - 1 >= Data && // array will be reallocated and inserted items are from this array (items will be released after array reallocation)
+        if (Count + count > Available && members + count - 1 >= Data && // array will be reallocated and the inserted items come from this array (the items will be released after reallocation)
             members < Data + Count)
         {
             TRACE_C("Inserted items could become invalid during operation.");
@@ -1190,7 +1191,7 @@ template <class DATA_TYPE, WORD Base, WORD Delta>
 void TSmallerDirectArray<DATA_TYPE, Base, Delta>::Destroy()
 {
 #if defined(_DEBUG) || defined(__ARRAY_DEBUG)
-    if (State == etNone) // muze prijit etDestructed
+    if (State == etNone) // State can also be etDestructed
     {
 #endif
         if (Data != NULL)
@@ -1352,7 +1353,7 @@ void TSmallerDirectArray<DATA_TYPE, Base, Delta>::DestroyMembers()
 }
 
 template <class DATA_TYPE, WORD Base, WORD Delta>
-void // int pouzity jen kvuli warningum - rozsah do 65535
+void // int is used only to avoid warnings; range up to 65535
 TSmallerDirectArray<DATA_TYPE, Base, Delta>::Delete(int index)
 {
 #if defined(_DEBUG) || defined(__ARRAY_DEBUG)

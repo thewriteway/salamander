@@ -1,26 +1,27 @@
 ﻿// SPDX-FileCopyrightText: 2023 Open Salamander Authors
 // SPDX-License-Identifier: GPL-2.0-or-later
+// CommentsTranslationProject: TRANSLATED
 
 #pragma once
 
 //*****************************************************************************
 //
 // 20.1.2003
-// Poznamka k optimalizacim prevodem do ASM: optimalizace se projevi predevsim
-// u porovnani shodnych retezcu, tedy da-li se funkcim prilezitost k prohledavat
-// retezce cele. Navic je optimalizace znatelnejsi na starsich procesorech, kde
-// ASM varianty dokazou pracovat 8x rychleji (stara pentia).
 //
-// Moderni procesory (AMD Athlon, Pentium Pro) dokazou optimalizovanou C++
-// variantu vykonat temer stejne rychle jako jeji ASM variantu. Protoze ale
-// zatim nejsou optimalizovane C++ varianty rychlejsi a ASM je mnohem rychlejsi
-// nez debug C++ varianta, pouzivame ASM varianty.
+// Note on optimizations by converting to ASM: the benefit shows up mainly
+// when comparing identical strings, that is, when the functions get a chance to scan
+// entire strings. The optimization is also more noticeable on older processors,
+//where the ASM variants can run up to 8x faster (old Pentiums).
 //
-// Funkce StrNICmp v C++ na Pentiu Pro beha rychleji nez v ASM varianta.
+// Modern processors (AMD Athlon, Pentium Pro) can execute the optimized C++
+// variant almost as fast as its ASM variant. Because the optimized C++ variants
+// are not faster yet, and ASM is much faster than the debug C++ variant, we use
+//the ASM variants.
 //
+//The C++ version of StrNICmp runs faster on Pentium Pro than the ASM variant.
 
-extern BYTE LowerCase[256]; // premapovani vsech znaku na male; generovano pomoci API CharLower
-extern BYTE UpperCase[256]; // premapovani vsech znaku na velke; generovano pomoci API CharUpper
+extern BYTE LowerCase[256]; // maps all characters to lowercase; generated using the CharLower API
+extern BYTE UpperCase[256]; // maps all characters to uppercase; generated using the CharUpper API
 
 //*****************************************************************************
 //
@@ -142,30 +143,30 @@ int StrNICmp(const char* s1, const char* s2, int n);
 //
 int MemICmp(const void* buf1, const void* buf2, int n);
 
-// rychlejsi strlen, jede po ctyrech znacich
-// do str se saha po ctyrech bytech -> nutny vetsi buffer
-// int StrLen(const char *str);    // pouze 2 x rychlejsi, zbytecne riziko pristupu do nezarovnane pameti
+// faster strlen; processes four characters at a time
+// the string is accessed four bytes at a time -> requires a larger buffer
+// int StrLen(const char *str);    // only 2x faster; unnecessary risk of unaligned memory access
 
-// nakopiruje text do nove naalokovaneho prostoru, NULL = malo pameti
+// copies the text into newly allocated memory; returns NULL on out-of-memory
 char* DupStr(const char* txt);
 
-// nakopiruje text do nove naalokovaneho prostoru, NULL = malo pameti,
-// navic pri nedostatku pameti nastavi 'err' na TRUE
+// copies the text into newly allocated memory; returns NULL on out-of-memory,
+// and also sets 'err' to TRUE on out-of-memory
 char* DupStrEx(const char* str, BOOL& err);
 
-// vraci prvni vyskyt 'pattern' v 'txt' nebo NULL, je case-insensitive
+// returns the first case-insensitive occurrence of 'pattern' in 'txt', or NULL
 const char* StrIStr(const char* txt, const char* pattern);
 
-// vraci prvni vyskyt 'pattern' v 'txt' nebo NULL, je case-insensitive
+// returns the first case-insensitive occurrence of 'pattern' in 'txt', or NULL
 const char* StrIStr(const char* txtStart, const char* txtEnd,
                     const char* patternStart, const char* patternEnd);
 
-// pripoji retezec 'src' za retezec 'dest', ale neprekroci delku 'dstSize'
-// retezec zakoncuje nulou, ktera spada do delky 'dstSize'
-// vraci 'dst'
+// appends 'src' to 'dst', but does not exceed 'dstSize'
+// null-terminates the string within 'dstSize'
+// returns 'dst'
 char* StrNCat(char* dst, const char* src, int dstSize);
 
-// tento historicky kod uz nikdo nepouziva
+// this legacy code is no longer used
 /*
 #define CONVERT_TAB_CHARS     44
 #define CONVERT_TAB_MAX_CHARS 256
@@ -183,11 +184,12 @@ class CConvertTab
 extern CConvertTab ConvertTab;
 */
 
-//*****************************************************************************
+// *****************************************************************************
 //
 // SWPrintFToEnd_s
 //
-// jedina odlisnost od swprintf_s je, ze zapisuje az za text umisteny v bufferu
+// The only difference from swprintf_s is that it writes after the text already
+// stored in the buffer
 
 template <size_t _Size>
 inline int SWPrintFToEnd_s(WCHAR (&_Dst)[_Size], const WCHAR* _Format, ...)
@@ -206,11 +208,12 @@ inline int SWPrintFToEnd_s(WCHAR* _Dst, size_t _SizeInWords, const WCHAR* _Forma
     return vswprintf_s(_Dst + len, _SizeInWords - len, _Format, _ArgList);
 }
 
-//*****************************************************************************
+// *****************************************************************************
 //
 // SPrintFToEnd_s
 //
-// jedina odlisnost od swprintf_s je, ze zapisuje az za text umisteny v bufferu
+// The only difference from sprintf_s is that it writes after the text already
+// stored in the buffer
 
 template <size_t _Size>
 inline int SPrintFToEnd_s(char (&_Dst)[_Size], const char* _Format, ...)
