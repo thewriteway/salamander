@@ -836,7 +836,7 @@ BOOL CMainWindow::SHChangeNotifyInitialize()
                                                       WM_USER_SHCHANGENOTIFY,
                                                       1, &entry);
 
-    // dealokace pidl
+    // Deallocate the PIDL.
     IMalloc* alloc;
     if (SUCCEEDED(CoGetMalloc(1, &alloc)))
     {
@@ -1840,7 +1840,7 @@ MENU_TEMPLATE_ITEM AddToSystemMenu[] =
         BOOL oldPanelCaption = Configuration.ShowPanelCaption;
         BOOL oldPanelZoom = Configuration.ShowPanelZoom;
 
-        UserMenuIconBkgndReader.ResetSysColorsChanged(); // now, we start watching system color changes (icon reload required)
+        UserMenuIconBkgndReader.ResetSysColorsChanged(); // now, we start watching system color changes (user menu icon reload required)
         BOOL readingUMIcons = UserMenuIconBkgndReader.IsReadingIcons();
         if (readingUMIcons) // new icons are being loaded for the user menu; show them only after the configuration is finished (on OK, reload the icons so any newly added ones are loaded too)
             UserMenuIconBkgndReader.BeginUserMenuIconsInUse();
@@ -3119,7 +3119,7 @@ MENU_TEMPLATE_ITEM AddToSystemMenu[] =
             RightPanel->GotoRoot();
             return 0;
         }
-            // enabling/diabling the left panel status line
+            // enabling/disabling the left panel status line
         case CM_LEFTSTATUS:
         {
             LeftPanel->ToggleStatusLine();
@@ -6727,7 +6727,7 @@ MENU_TEMPLATE_ITEM AddToSystemMenu[] =
         {
             TRACE_I("WM_QUERYENDSESSION: allowing shutdown...");
             // main window already closed - nobody to deliver WM_ENDSESSION to, neither WaitInEndSession
-            // and SaveCfgInEndSession needs to be set
+            // and SaveCfgInEndSession does not need to be set
             return TRUE; // if it gets this far, allow the shutdown
         }
         return 0; // return value for WM_USER_CLOSE_MAINWND, WM_USER_FORCECLOSE_MAINWND and WM_ENDSESSION

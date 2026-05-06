@@ -17,7 +17,7 @@
 #endif // _MSC_VER
 #include <limits.h>
 #include <stdio.h>
-//needed for HIMAGELIST
+// Needed for HIMAGELIST support
 #include <ostream>
 #ifdef __BORLANDC__
 #include <stdlib.h>
@@ -1100,7 +1100,7 @@ void CTransferInfo::EditLine(int ctrlID, double& value, char* format, BOOL selec
             BOOL decPoints = FALSE;
             BOOL expPart = FALSE;
             if (*s == '-' || *s == '+')
-                s++;        // skip a digit
+                s++;        // skip the sign
             while (*s != 0) // convert comma to period
             {
                 if (!expPart && !decPoints && (*s == ',' || *s == '.'))
@@ -1162,7 +1162,7 @@ void CTransferInfo::EditLine(int ctrlID, int& value, BOOL select)
 
             char* s = buff;
             if (*s == '-' || *s == '+')
-                s++;        // skip a digit
+                s++;        // skip the sign
             while (*s != 0) // validate the number
             {
                 if (*s < '0' || *s > '9')

@@ -28,8 +28,8 @@ class CPluginDataInterfaceAbstract;
 // ****************************************************************************
 // CSalamanderForViewFileOnFSAbstract
 //
-// set of methods from Salamander for supporting ViewFile in CPluginFSInterfaceAbstract,
-// the interface is valid only within the method to which it is passed as a parameter
+// methods provided by Salamander to support ViewFile in CPluginFSInterfaceAbstract,
+// this interface is valid only for the duration of the method that receives it
 
 class CSalamanderForViewFileOnFSAbstract
 {
@@ -50,11 +50,11 @@ public:
     // the FTP download has already been performed), or FALSE if the file still needs to be prepared
     // (for example by downloading it); 'parent' is the parent of error message boxes (for example, an overly long
     // file name)
-    // WARNING: if it did not return NULL (no system error occurred), it is necessary to later call
-    //          FreeFileNameInCache (for the same 'uniqueFileName')
+    // WARNING: if it returns non-NULL (no system error occurred), you must later call
+    //          FreeFileNameInCache (with the same 'uniqueFileName')
     // NOTE: if the FS uses the disk cache, it should at least call
-    //       CSalamanderGeneralAbstract::RemoveFilesFromCache("fs-name:") when the plugin is unloaded, otherwise
-    //       its file copies will needlessly clutter the disk cache
+    //       CSalamanderGeneralAbstract::RemoveFilesFromCache("fs-name:") when the plugin is unloaded; otherwise,
+    //       its file copies will unnecessarily clutter the disk cache
     virtual const char* WINAPI AllocFileNameInCache(HWND parent, const char* uniqueFileName, const char* nameInCache,
                                                     const char* rootTmpPath, BOOL& fileExists) = 0;
 
@@ -312,20 +312,20 @@ public:
     // 'path' is an in/out buffer containing the path (the buffer size is 'pathBufSize')
     virtual void WINAPI CompleteDirectoryLineHotPath(char* path, int pathBufSize) = 0;
 
-    // loads files and directories from the current path and stores them in the 'dir' object (for path NULL or
-    // "", files and directories on other paths are ignored; if a directory named
-    // ".." is added, it is drawn as the "up-dir" symbol; file and directory names are fully
-    // determined by the plugin, Salamander only displays them); Salamander obtains the contents of
-    // plugin-added columns through the 'pluginData' interface (if the plugin does not add columns
-    // and has no custom icons, it returns 'pluginData'==NULL); in 'iconsType' it returns the requested method
-    // of obtaining file and directory icons for the panel; pitFromPlugin degrades to pitSimple if
-    // 'pluginData' is NULL (without 'pluginData', pitFromPlugin cannot be provided); if 'forceRefresh' is
-    // TRUE, this is a hard refresh (Ctrl+R) and the plugin should load files and directories without using
-    // the cache; returns TRUE if loading succeeds; if it returns FALSE, an error occurred and ChangePath
-    // will be called on the current path; ChangePath is expected to select an accessible subpath
-    // or return FALSE; after a successful call to ChangePath, ListCurrentPath will be called again;
-    // if it returns FALSE, the return value 'pluginData' is ignored (the data in 'dir' must be
-    // released using 'dir.Clear(pluginData)', otherwise only the Salamander part of the data is released);
+    // Only if GetSupportedServices() returns FS_SERVICE_GETPATHFORMAINWNDTITLE:
+    // obtains the text to be displayed in the main window title if current path display
+    // in the main window title is enabled (see Configuration/Appearance/Display current
+    // path...); 'fsName' is the current FS name; if 'mode' is 1, it is the
+    // "Directory Name Only" mode (only the name of the current directory should be displayed - the last
+    // component of the path); if 'mode' is 2, it is the "Shortened Path" mode (a
+    // shortened form of the path should be displayed - root (including path separator) + "..." + path
+    // separator + the last path component); 'buf' is a buffer of size 'bufSize' for the
+    // resulting text; returns TRUE if it returns the requested text; returns FALSE if the
+    // text should be created based on separator point data obtained via the
+    // GetNextDirectoryLineHotPath() method.
+    // NOTE: if GetSupportedServices() does not return FS_SERVICE_GETPATHFORMAINWNDTITLE,
+    //       the full path on the FS is displayed in the main window title in all title display
+    //       modes (even in "Directory Name Only" and "Shortened Path").
     virtual BOOL WINAPI GetPathForMainWindowTitle(const char* fsName, int mode, char* buf, int bufSize) = 0;
 
     // Only if GetSupportedServices() returns FS_SERVICE_SHOWINFO:

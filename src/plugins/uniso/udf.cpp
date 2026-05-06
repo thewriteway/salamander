@@ -37,7 +37,7 @@ typedef wchar_t unicode_t;
 //		  | ((Uint32)data[(p) + 2] << 16))
 #define GET_DWORD(data, p) ((Uint32)data[p] | ((Uint32)data[(p) + 1] << 8) | ((Uint32)data[(p) + 2] << 16) | ((Uint32)data[(p) + 3] << 24))
 #define GET_QWORD(data, p) ((Uint64)data[p] | ((Uint64)data[(p) + 1] << 8) | ((Uint64)data[(p) + 2] << 16) | ((Uint64)data[(p) + 3] << 24) | ((Uint64)data[(p) + 4] << 32) | ((Uint64)data[(p) + 5] << 40) | ((Uint64)data[(p) + 6] << 48) | ((Uint64)data[(p) + 7] << 56))
-/* This is wrong with regard to endianess */
+/* This is wrong with regard to endianness */
 #define GETN(data, p, n, target) memcpy(target, &data[p], n)
 
 static void
@@ -513,7 +513,7 @@ int CUDF::ReadFileEntry(Uint8* data, bool bEFE, Uint16 part, CICBTag* icbTag, CU
                 ad->Length = l_ad;
                 ad->Location = 0; // To be determined by the caller
                 ad->Partition = part;
-                return -1; // -1 tells the caller that Location is not set yet
+                return -1; // -1 tells the caller the data is inlined, but Location is not set
             }
         }
         else
@@ -1181,7 +1181,7 @@ int CUDF::UnpackFile(CSalamanderForOperationsAbstract* salamander, const char* s
                 // picb->Offset is nonzero only for small (less than a sector) files inlined within File Entry
                 if (!file.Write(sector + picb->Offset, nbytes, &written, name, NULL))
                 {
-                    // The error message was already displayed.
+// The error message was already displayed by SafeWriteFile().
                     ret = UNPACK_CANCEL;
                     bFileComplete = FALSE;
                     break;

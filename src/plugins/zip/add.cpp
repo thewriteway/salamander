@@ -1630,7 +1630,7 @@ int CZipPack::PackFiles()
                 if (Options.Action & PA_MULTIVOL)
                 {
                     TempFile->FilePointer = file.LocHeaderOffs;
-                    // Pleasee the comment for encrypted archives 35 lines above, it applies also here
+                    // See the comment for encrypted archives 35 lines above; it applies here as well
                     if (Config.Level <= 2)
                     {
                         next->Flag |= FAST;
@@ -2420,7 +2420,7 @@ int CZipPack::WriteSfxExecutable(const char* sfxFile, const char* sfxPackage, BO
     unsigned size;
     CSfxFileHeader sfxHead;
 
-    //copy exetutable
+    //copy executable
     char package[MAX_PATH];
     GetModuleFileName(DLLInstance, package, MAX_PATH);
     SalamanderGeneral->CutDirectory(package);

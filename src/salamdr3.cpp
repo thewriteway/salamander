@@ -505,7 +505,7 @@ BOOL SalGetFullName(char* name, int* errTextID, const char* curDir, char* nextFo
                 if (curDir != NULL)
                 {
                     // for relative paths without a leading '\\', do not treat spaces as mistakes when 'allowRelPathWithSpaces' is enabled
-                    // (a directory or file name can start with a space even though Windows and other softwares,
+                    // (a directory or file name can start with a space even though Windows and other software,
                     // Salamander included, try to prevent it)
                     if (allowRelPathWithSpaces && *s != '\\')
                         s = name;
@@ -2924,7 +2924,7 @@ LRESULT CALLBACK MenuWheelHookProc(int nCode, WPARAM wParam, LPARAM lParam)
     // Therefore, I disabled this path and we will handle the messages only in the panel.
     // Note: we could probably cut off WM_MOUSEWHEEL handling in the same way, but I do not want to risk breaking something on older OSes
     // (we can revisit this when moving to Windows 2000 and later).
-    // Note 2: if it turns out we must capture WM_MOUSEHWHEEL via this hook as well, we should implemenent runtime detection that the messages
+    // Note 2: if it turns out we must capture WM_MOUSEHWHEEL via this hook as well, we should implement runtime detection that the messages
     // pass through here and then disable their processing in the panels and the command line.
 
     // 30 Nov 2012 - a user appeared on the forum for whom WM_MOUSEHWHEEL does not get through the message hook (the same as previously with Manison in the case of WM_MOUSEHWHEEL):

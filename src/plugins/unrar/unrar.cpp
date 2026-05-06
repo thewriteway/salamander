@@ -1058,7 +1058,7 @@ BOOL CPluginInterfaceForArchiver::ReadHeader(CFileHeader* header)
     {
     case 0:
     {
-        // Not every char representable in ANSI page can be reprsented in OEM page used by RAR files
+        // Not every char representable in ANSI page can be represented in OEM page used by RAR files
         // e.g. the Ellipsis character 0x2026
         if (headerData.FileNameW[0])
         {
@@ -1768,7 +1768,7 @@ void GetInfo(char* buffer, FILETIME* lastWrite, CQuadWord& size)
 
 //***********************************************************************************
 //
-// Rutiny ze SHLWAPI.DLL
+// Routines from SHLWAPI.DLL
 //
 
 LPTSTR PathFindExtension(LPTSTR pszPath)

@@ -24,14 +24,14 @@ typedef void (*FRefillInBuffer)(CDecompressionObject*);
 
 typedef struct
 {
-    //public fields, should be intialized before calling Inflate()
+    //public fields, should be initialized before calling Inflate()
     uch* NextByte;      //pointer to next byte in the input buffer
     unsigned BytesLeft; //number of bytes left in buffer
                         //i.e. number of valid bytes pointed
                         //by NextByte
     void* UserData;     //pointer to a user data
     int Error;          //error state (0 = no error), could be set
-                        //by arbitrary funcion at every time
+                        //by arbitrary function at every time
                         //checked in NextByte() function (inflate.cpp)
 
     //internal fields
@@ -49,11 +49,11 @@ typedef struct
 
 typedef int (*FFlushOutput)(unsigned, CDecompressionObject*);
 //first parameter is number of bytes to be flushed
-//return zero if succesfull, non zero value if failed
+//return zero if successful, non zero value if failed
 
 typedef struct
 {
-    //public fields, should be intialized before calling Inflate()
+    //public fields, should be initialized before calling Inflate()
     uch* SlideWin;    //circular buffer
     unsigned WinSize; //size of sliding window,
                       //should be at least 32K
@@ -70,7 +70,7 @@ typedef struct
     unsigned BufSize;
 } COutputManager;
 
-//decopmression object
+//decompression object
 
 typedef int (*FProgressMonitor)(CDecompressionObject*);
 // If zero is returned, decompression is aborted.
@@ -82,7 +82,7 @@ struct tagCDecompressionObject
     void* UserData; //pointer to a user data
     void* HeapInfo; //passed to memory functions
 
-    //inflate: fixed hufman trees
+    //inflate: fixed Huffman trees
     struct huft* fixed_tl64; // !! must be NULL initialized
     struct huft* fixed_td64; //before calling inflate
     int fixed_bl64,

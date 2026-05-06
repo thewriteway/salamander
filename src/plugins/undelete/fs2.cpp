@@ -779,8 +779,8 @@ BOOL CPluginFSInterface::CopyFile(FILE_RECORD_I<char>* record, char* filename, c
     // extract all streams
     char* pathend = path + strlen(path);
 
-    // we want to copy file stream (no ADS streams) first
-    // otherwise file overwrite test will be broken beacuse with ADS will be also created base file
+    // we want to copy the file stream (without ADS streams) first
+    // otherwise the overwrite check would fail because ADS would also create the base file
     TDirectArray<DATA_STREAM_I<char>*> copyStreams(10, 10);
     DATA_STREAM_I<char>* stream = record->Streams;
     while (stream != NULL)
@@ -800,7 +800,7 @@ BOOL CPluginFSInterface::CopyFile(FILE_RECORD_I<char>* record, char* filename, c
         stream = copyStreams[streamIndex];
         if (encrypted)
         {
-            // append .bak when backuping encrypted files
+            // append .bak when backing up encrypted files
             if (BackupEncryptedFiles)
             {
                 lstrcpyn(pathend, ".bak", MAX_PATH);
@@ -2028,7 +2028,7 @@ void CPluginFSInterface::FragmentFile(HWND parent, const DIR_ITEM_I<char>* di, c
         goto exit;
     }
 
-    // find free cluster, use returned re-alligned starting LCN
+    // find free cluster, use returned realigned starting LCN
     for (int i = 0; freeLCN == -1 && i < BITMAP_BUFFER_SIZE - sizeof(VOLUME_BITMAP_BUFFER) - 32; i++)
     {
         if (bitmap->Buffer[i] != 0xFF)

@@ -122,10 +122,10 @@ public:
     virtual void WINAPI TraceSetThreadName(const char* name) = 0;
     virtual void WINAPI TraceSetThreadNameW(const WCHAR* name) = 0;
 
-    // initializes the thread with the things needed for CALL-STACK methods (see Push and Pop below);
-    // in all called plugin methods, CALL_STACK methods can then be used directly;
+    // initializes the thread state required by the CALL-STACK methods (see Push and Pop below);
+    // all called plugin methods can then use the CALL_STACK methods directly;
     // this method is used only for new plugin threads;
-    // it runs 'threadBody' with the 'param' parameter and returns the result of 'threadBody'
+    // runs 'threadBody' with the 'param' parameter and returns its result
     virtual unsigned WINAPI CallWithCallStack(unsigned(WINAPI* threadBody)(void*), void* param) = 0;
 
     // stores a message on the CALL-STACK ('format'+'args', see vsprintf); if the application crashes,
@@ -298,8 +298,7 @@ public:
     // 'state_or'+'state_and' parameters have no meaning in that case); 'hotKey' is the item's hot key
     // obtained with the SALHOTKEY macro; 'name' may contain a hot-key hint,
     // separated by '\t'; in that case the 'hotKey' variable must be assigned the
-    // SALHOTKEY_HINT, for more details see the comment for SALHOTKEY_HINT; 'id' is the unique
-    // identifier
+    // SALHOTKEY_HINT, for more details see the comment for SALHOTKEY_HINT; 'id' is the
     // item's unique identifier within the plugin (for a separator it matters only if 'callGetState' is TRUE),
     // if 'callGetState' is TRUE, the item state is obtained by calling
     // CPluginInterfaceForMenuExtAbstract::GetMenuItemState (for separators, only the
@@ -324,7 +323,7 @@ public:
     // if 'callGetState' is TRUE, the submenu state is obtained by calling
     // CPluginInterfaceForMenuExtAbstract::GetMenuItemState (only the
     // MENU_ITEM_STATE_ENABLED and MENU_ITEM_STATE_HIDDEN states matter; the others are ignored), otherwise
-    // the item state (enabled/disabled) is computed from 'state_or'+'state_and' - for the state calculation
+    // the item state (enabled/disabled) is computed from 'state_or'+'state_and' -
     // for the item state calculation, see CSalamanderConnectAbstract::AddMenuItem(); the
     // 'skillLevel' parameter
     // specifies for which user levels the submenu is displayed; the value contains one or more
@@ -485,7 +484,7 @@ public:
     // anything
     // (do not open any windows)
     // WARNING!!! All plugin threads must be terminated (if Release returns TRUE, Salamander calls
-    // FreeLibrary is called on the plugin .SPL, so the plugin code is unmapped from memory and the threads
+    // FreeLibrary on the plugin .SPL, so the plugin code is unmapped from memory and the threads
     // have nothing left to run; usually neither a bug report nor Windows exception info is generated)
     virtual BOOL WINAPI Release(HWND parent, BOOL force) = 0;
 
